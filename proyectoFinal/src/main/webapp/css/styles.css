@@ -1,0 +1,11 @@
+#LogoCaC {
+    height: 3.5rem;
+}
+.animate-hover-card{
+    transition: trasnform 0.2s ease-in
+}
+
+.animate-hover-card:hover{
+    cursor: pointer;
+    transform: scale(1.03)
+}
