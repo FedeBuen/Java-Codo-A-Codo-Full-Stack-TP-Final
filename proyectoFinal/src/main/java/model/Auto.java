@@ -22,7 +22,7 @@ public class Auto {
     
     
     public Auto(int idAuto, String marca, String modelo, String nacionalidad, String periodo, String potencia, String aceleracion, String velocidad, byte[] imagen, double precio) {
-        this.idAuto = idAuto;
+       this.idAuto = idAuto;
         this.marca = marca;
         this.modelo = modelo;
         this.nacionalidad = nacionalidad;
