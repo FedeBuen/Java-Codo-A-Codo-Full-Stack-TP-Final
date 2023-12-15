@@ -11,8 +11,8 @@ import org.apache.commons.dbcp2.BasicDataSource;
 
 public class Conexion {
     private static final String JDBC_URL = "jdbc:mysql://localhost:3306/autos?useSSL=false&useTimeZone=true&serverTimeZone=UTC&allowPublicKeyRetrieval=true";
-    private static final String JDBC_USR = "root";
-    private static final String JDBC_PASS = "root";
+    private static final String JDBC_USR = "fbuen";
+    private static final String JDBC_PASS = "F426@buen";
 
     public static DataSource getDataSource() {
         BasicDataSource ds = new BasicDataSource();

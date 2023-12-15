@@ -103,6 +103,42 @@ public class AutoServletController extends HttpServlet {
                 response.put("message", "Auto agregado exitooooooosamente");
                 mapper.writeValue(res.getWriter(), response);
             }
+            case "update" -> {
+                try {
+                    int idAuto = Integer.parseInt(req.getParameter("idAuto"));
+                    String marca = req.getParameter("marca");
+                    String modelo = req.getParameter("modelo");
+                    String nacionalidad = req.getParameter("nacionalidad");
+                    String periodo = req.getParameter("periodo");
+                    String potencia = req.getParameter("potencia");
+                    String aceleracion = req.getParameter("aceleracion");
+                    String velocidad = req.getParameter("velocidad");
+
+                    double precio = Double.parseDouble(req.getParameter("precio"));
+
+                    Part filePart = req.getPart("imagen");
+                    byte[] imagenBytes = IOUtils.toByteArray(filePart.getInputStream());
+
+                    Auto auto = new Auto(idAuto, marca, modelo, nacionalidad, periodo, potencia, aceleracion, velocidad, imagenBytes, precio);
+                    AutoDAO.modificar(auto);
+                    
+                    res.setContentType("application/json");
+                    res.setCharacterEncoding("UTF-8");
+
+                    Map<String, String> response = new HashMap<>();
+                    response.put("success", "true");
+                    mapper.writeValue(res.getWriter(), response);
+                } catch (Exception e) {
+                    res.setContentType("application/json");
+                    res.setCharacterEncoding("UTF-8");
+
+                    Map<String, String> responseFail = new HashMap<>();
+                    responseFail.put("success", "false");
+                    responseFail.put("message", e.getMessage());
+                    mapper.writeValue(res.getWriter(), responseFail);
+                }
+
+            }
 
         }
 

@@ -14,7 +14,7 @@ public class AutoDAO {
     private static final String SQL_SELECT_ID ="SELECT * FROM deportivos WHERE idAuto = ?";
     private static final String SQL_INSERT ="INSERT INTO deportivos (marca, modelo, nacionalidad, periodo, potencia, aceleracion, velocidad, imagen, precio) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
     private static final String SQL_DELETE = "DELETE FROM deportivos WHERE idAuto = ?";
-     private static final String SQL_UPDATE = "UPDATE deportivos SET marca = ?, modelo = ?,nacionalidad = ?,periodo = ?,potencia = ?,aceleracion = ?,velocidad = ?,imagen = ?,precio = ? WHERE idauto = ?";
+     private static final String SQL_UPDATE = "UPDATE deportivos SET marca = ?, modelo = ?, nacionalidad = ?, periodo = ?, potencia = ?, aceleracion = ?, velocidad = ?, precio = ? WHERE idAuto = ?";
     
     public static List<Auto> seleccionar() {
         Connection conn = null;
@@ -121,7 +121,7 @@ public class AutoDAO {
             stmt.setBlob(8, imagenBlob);
             
             stmt.setDouble(9,auto.getPrecio());
-            
+           
             registros = stmt.executeUpdate();
             
         } catch (SQLException ex) {
@@ -163,6 +163,38 @@ public class AutoDAO {
         return registros;
     } 
     
+    public static int modificar(Auto auto) {
+        Connection conn = null;
+        PreparedStatement stmt = null;
+        int registros = 0;
+        try {
+            conn = getConexion();
+            stmt = conn.prepareStatement(SQL_UPDATE);
+            stmt.setString(1,auto.getMarca());
+            stmt.setString(2, auto.getModelo());
+            stmt.setString(3, auto.getNacionalidad());
+            stmt.setString(4,auto.getPeriodo());
+            stmt.setString(5, auto.getPotencia());
+            stmt.setString(6, auto.getAceleracion());
+            stmt.setString(7,auto.getVelocidad());
+            stmt.setDouble(8,auto.getPrecio());
+            stmt.setInt(9, auto.getIdAuto());
+            
+            registros = stmt.executeUpdate();
+            
+        } catch (SQLException ex) {
+            ex.printStackTrace(System.out);
+        }
+        finally{
+            try {
+                close(stmt);
+                close(conn);
+            } catch (SQLException ex) {
+                ex.printStackTrace(System.out);
+            }
+        }
+        return registros;
+    }
     
     
 }

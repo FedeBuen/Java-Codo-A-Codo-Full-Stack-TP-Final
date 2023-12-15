@@ -89,12 +89,100 @@ document.addEventListener("DOMContentLoaded", function(){
         btnEliminarElement.classList.add("d-none");
         btnModificarElement.classList.add("d-none");
         
+        autoDetailContainer.innerHTML = `
+            <div class="col-md-6 text-center">
+                <div class="clearfix">
+                    <img src="data:image/jpeg;base64,${objetoAuto.imagen}" class="my-4" style="width: 75%" alt="imagen de portada">
+                </div>
+            </div>
+        
+            <div class="card-body col-md-6">
+                <form  class="mb-4" id = "updateBookForm" enctype="multipart/form-data">
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="form-floating my-3">
+                                <input type="text" class="form-control" name="marca" id="marca" placeholder="marca" value="${objetoAuto.marca}" required/>
+                                <label for="marca">Marca</label>
+                            </div>
+
+                            <div class="form-floating my-3">
+                                <input type="text" class="form-control" name="modelo" id="modelo" placeholder="modelo" value="${objetoAuto.modelo}" required/>
+                                <label for="modelo">Modelo</label>
+                            </div>
+        
+                            <div class="form-floating my-3">
+                                <input type="text" class="form-control" name="nacionalidad" id="nacionalidad" placeholder="nacionalidad" value="${objetoAuto.nacionalidad}" required/>
+                                <label for="nacionalidad">Nacionalidad</label>
+                            </div>
+        
+                            <div class="form-floating my-3">
+                                <input type="text" class="form-control" name="periodo" id="periodo" placeholder="periodo" value="${objetoAuto.periodo}" required/>
+                                <label for="periodo">Periodo</label>
+                            </div>
+        
+                            <div class="form-floating my-3">
+                                <input type="text" class="form-control" name="potencia" id="potencia" placeholder="potencia" value="${objetoAuto.potencia}" required/>
+                                <label for="potencia">Potencia</label>
+                            </div>
+        
+                            <div class="form-floating my-3">
+                                <input type="text" class="form-control" name="aceleracion" id="aceleracion" placeholder="aceleracion" value="${objetoAuto.aceleracion}" required/>
+                                <label for="aceleracion">Aceleracion</label>
+                            </div>
+        
+                            <div class="form-floating my-3">
+                                <input type="text" class="form-control" name="velocidad" id="velocidad" placeholder="velocidad" value="${objetoAuto.velocidad}" required/>
+                                <label for="velocidad">Velocidad</label>
+                            </div>
+
+                            <div class="form-floating my-3">
+                                <input type="number" class="form-control" name="precio" id="precio" placeholder="precio" value="${objetoAuto.precio}" required/>
+                                <label  for="precio">Precio U$S</label>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        `
+        
     });
     
     
-    btnGuardarElement.addEventListener("click", function() {
-        window.location.href = `/app/index.html`;
-    })
+    btnGuardarElement.addEventListener("click", function(e) {
+        e.preventDefault();
+        const formulario = new FormData();
+        
+        formulario.append("action", "update");
+        formulario.append("idAuto", autoDetailId.id);
+        formulario.append("marca", document.getElementById("marca").value);
+        formulario.append("modelo", document.getElementById("modelo").value);
+        formulario.append("nacionalidad", document.getElementById("nacionalidad").value);
+        formulario.append("periodo", document.getElementById("periodo").value);
+        formulario.append("potencia", document.getElementById("potencia").value);
+        formulario.append("aceleracion", document.getElementById("aceleracion").value);
+        formulario.append("velocidad", document.getElementById("velocidad").value);
+        formulario.append("precio", document.getElementById("precio").value);
+        formulario.append("imagen", objetoAuto.imagen);
+        
+        fetch(`/app/autos`,{
+           method:"POST",
+           body: formulario
+        })
+                .then(response => {
+                    if(!response.ok){
+                        throw new Error(`Error en la solicitud: ${response.status}`);
+                    }
+                    return response.json();
+                })
+                .then(data =>{
+                    if(data.success == "true"){
+                        window.location.href = `/app/index.html`;
+                    }
+                    else{
+                        console.error("La solicitud fue exitosa, pero la respuesta indica un error: "+data.message)
+                    }
+                });
+    });
     
     loadAuto();
 });
