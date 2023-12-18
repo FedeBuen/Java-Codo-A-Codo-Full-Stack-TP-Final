@@ -1,17 +1,24 @@
-document.addEventListener("DOMContentLoaded", function(){
-   
+document.addEventListener("DOMContentLoaded", function () {
+
     const queryParams = new URLSearchParams(window.location.search);
     const autoDetailId = {
-        id: queryParams.get("idAuto")        
+        id: queryParams.get("idAuto")
     }
-        
+
     const autoDetailContainer = document.getElementById("autoDetails");
     const btnEliminarElement = document.getElementById("btnEliminar");
     const btnModificarElement = document.getElementById("btnModificar");
     const btnGuardarElement = document.getElementById("btnGuardar");
     const btnContainerElement = document.getElementById("btnContainer");
+    const btnModificarImagenElement = document.getElementById("btnModificarImagen");
+    const btnGuardarImagenElement = document.getElementById("btnGuardarImagen");
+    const divImagenModificadaElement = document.getElementById("imagenModificada");
     
-    let objetoAuto= {
+    const imagenElement = document.getElementById("imagen");
+    const imagenPreview = document.getElementById("imagenPreview");
+    const imagenContainer = document.getElementById("imagenContainer");
+
+    let objetoAuto = {
         idauto: 0,
         marca: "",
         modelo: "",
@@ -23,10 +30,10 @@ document.addEventListener("DOMContentLoaded", function(){
         precio: 0,
         imagen: ""
     }
-    
-    function loadAuto(){
-        
-        fetch(`/app/autos?action=getById&idAuto=${autoDetailId.id}`)      
+
+    function loadAuto() {
+
+        fetch(`/app/autos?action=getById&idAuto=${autoDetailId.id}`)
                 .then(response => response.json())
                 .then(data => {
                     autoDetailContainer.innerHTML += `
@@ -53,7 +60,7 @@ document.addEventListener("DOMContentLoaded", function(){
                             </ul>    
                         </div>
                     `;
-                    
+
                     objetoAuto.idauto = data.idAuto;
                     objetoAuto.marca = data.marca;
                     objetoAuto.modelo = data.modelo;
@@ -64,35 +71,33 @@ document.addEventListener("DOMContentLoaded", function(){
                     objetoAuto.velocidad = data.velocidad;
                     objetoAuto.precio = data.precio;
                     objetoAuto.imagen = data.imagen;
-                    
+
                 })
     }
-    
-    
-    
-    
-    btnEliminarElement.addEventListener("click", function() {
+
+    btnEliminarElement.addEventListener("click", function () {
         fetch(`/app/autos?action=delete&idAuto=${autoDetailId.id}`, {
             method: "DELETE"
         })
                 .then(response => response.json())
                 .then(data => {
-                    if(data.success) {
+                    if (data.success) {
                         window.location.href = `/app/index.html`;
                     }
-        });
-        
+                });
+
     });
-        
-    btnModificarElement.addEventListener("click", function() {
+
+    btnModificarElement.addEventListener("click", function () {
         btnGuardarElement.classList.remove("d-none");
         btnEliminarElement.classList.add("d-none");
         btnModificarElement.classList.add("d-none");
-        
+        btnModificarImagenElement.classList.add("d-none");
+
         autoDetailContainer.innerHTML = `
             <div class="col-md-6 text-center">
                 <div class="clearfix">
-                    <img src="data:image/jpeg;base64,${objetoAuto.imagen}" class="my-4" style="width: 75%" alt="imagen de portada">
+                    <img src="data:image/jpeg;base64,${objetoAuto.imagen}" class="my-4" style="width: 75%" alt="Imagen auto">
                 </div>
             </div>
         
@@ -144,14 +149,14 @@ document.addEventListener("DOMContentLoaded", function(){
                 </form>
             </div>
         `
-        
+
     });
-    
-    
-    btnGuardarElement.addEventListener("click", function(e) {
+
+
+    btnGuardarElement.addEventListener("click", function (e) {
         e.preventDefault();
         const formulario = new FormData();
-        
+
         formulario.append("action", "update");
         formulario.append("idAuto", autoDetailId.id);
         formulario.append("marca", document.getElementById("marca").value);
@@ -163,25 +168,72 @@ document.addEventListener("DOMContentLoaded", function(){
         formulario.append("velocidad", document.getElementById("velocidad").value);
         formulario.append("precio", document.getElementById("precio").value);
         formulario.append("imagen", objetoAuto.imagen);
-        
-        fetch(`/app/autos`,{
-           method:"POST",
-           body: formulario
+
+        fetch(`/app/autos`, {
+            method: "POST",
+            body: formulario
         })
                 .then(response => {
-                    if(!response.ok){
+                    if (!response.ok) {
                         throw new Error(`Error en la solicitud: ${response.status}`);
                     }
                     return response.json();
                 })
-                .then(data =>{
-                    if(data.success == "true"){
+                .then(data => {
+                    if (data.success == "true") {
                         window.location.href = `/app/index.html`;
-                    }
-                    else{
-                        console.error("La solicitud fue exitosa, pero la respuesta indica un error: "+data.message)
+                    } else {
+                        console.error("La solicitud fue exitosa, pero la respuesta indica un error: " + data.message)
                     }
                 });
+    });
+
+    btnModificarImagenElement.addEventListener("click", function () {
+        btnGuardarImagenElement.classList.remove("d-none");
+        btnEliminarElement.classList.add("d-none");
+        btnModificarElement.classList.add("d-none");
+        btnModificarImagenElement.classList.add("d-none");
+        divImagenModificadaElement.classList.remove("d-none");
+
+        autoDetailContainer.innerHTML = `
+        
+            <div class="col-md-6 mx-auto text-center">
+                <div class="clearfix">
+                    <img src="data:image/jpeg;base64,${objetoAuto.imagen}" class="my-4" style="width: 75%" alt="Imagen Auto">
+                </div>
+            </div>
+            `
+    });
+
+            
+    imagenElement.addEventListener("change", function() {
+       
+        const imagenSelected = imagenElement.files[0];
+        
+        if (imagenSelected) {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                imagenPreview.src = e.target.result;
+                imagenContainer.classList.remove("d-none");
+            }
+            reader.readAsDataURL(imagenSelected);
+        } else {
+            imagenPreview.src = "";
+        }
+    });
+    
+    btnGuardarImagenElement.addEventListener("click", function() {
+       const datos = new FormData();
+        
+        datos.append("action", "updateImg");
+        datos.append("idAuto", autoDetailId.id);
+        datos.append("imagen", imagenElement.files[0]);
+        
+        fetch("/app/autos", {
+            method: "POST",
+            body: datos
+        })
+        window.location.href = `/app/index.html`;
     });
     
     loadAuto();

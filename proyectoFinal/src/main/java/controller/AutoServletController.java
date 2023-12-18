@@ -139,6 +139,14 @@ public class AutoServletController extends HttpServlet {
                 }
 
             }
+            case "updateImg" -> {
+                    int idAuto = Integer.parseInt(req.getParameter("idAuto"));
+                    Part filePart = req.getPart("imagen");
+                    byte[] imagenBytes = IOUtils.toByteArray(filePart.getInputStream());
+
+                    Auto auto = new Auto(idAuto, imagenBytes);
+                    AutoDAO.modificarImagen(auto);
+            }
 
         }
 
